@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.backstage_management.persistence.OrderMapper">
+    <select id="getOrderList" resultType="Order">
+         select
+            BILLADDR1 AS billAddress1,
+            BILLADDR2 AS billAddress2,
+            BILLCITY,
+            BILLCOUNTRY,
+            BILLSTATE,
+            BILLTOFIRSTNAME,
+            BILLTOLASTNAME,
+            BILLZIP,
+            SHIPADDR1 AS shipAddress1,
+            SHIPADDR2 AS shipAddress2,
+            SHIPCITY,
+            SHIPCOUNTRY,
+            SHIPSTATE,
+            SHIPTOFIRSTNAME,
+            SHIPTOLASTNAME,
+            SHIPZIP,
+            CARDTYPE,
+            COURIER,
+            CREDITCARD,
+            EXPRDATE AS expiryDate,
+            LOCALE,
+            ORDERDATE,
+            ORDERS.ORDERID,
+            TOTALPRICE,
+            USERID AS username,
+            STATUS
+         FROM ORDERS, ORDERSTATUS
+         WHERE ORDERS.ORDERID = ORDERSTATUS.ORDERID
+    </select>
+
+    <select id="getOrder" parameterType="string" resultType="Order">
+         select
+            BILLADDR1 AS billAddress1,
+            BILLADDR2 AS billAddress2,
+            BILLCITY,
+            BILLCOUNTRY,
+            BILLSTATE,
+            BILLTOFIRSTNAME,
+            BILLTOLASTNAME,
+            BILLZIP,
+            SHIPADDR1 AS shipAddress1,
+            SHIPADDR2 AS shipAddress2,
+            SHIPCITY,
+            SHIPCOUNTRY,
+            SHIPSTATE,
+            SHIPTOFIRSTNAME,
+            SHIPTOLASTNAME,
+            SHIPZIP,
+            CARDTYPE,
+            COURIER,
+            CREDITCARD,
+            EXPRDATE AS expiryDate,
+            LOCALE,
+            ORDERDATE,
+            ORDERS.ORDERID,
+            TOTALPRICE,
+            USERID AS username,
+            STATUS
+         FROM ORDERS, ORDERSTATUS
+         WHERE ORDERS.ORDERID = ORDERSTATUS.ORDERID
+         AND ORDERS.ORDERID=#{value}
+    </select>
+    <update id="updateOrder" parameterType="Order">
+    update ORDERS set
+       USERID = #{username},
+       ORDERDATE = #{orderDate},
+       SHIPADDR1 = #{shipAddress1},
+       SHIPADDR2 = #{shipAddress2,jdbcType=VARCHAR},
+       SHIPCITY = #{shipCity},
+       SHIPSTATE = #{shipState},
+       SHIPZIP = #{shipZip},
+       SHIPCOUNTRY = #{shipCountry},
+       BILLADDR1 = #{billAddress1},
+       BILLADDR2 = #{billAddress2,jdbcType=VARCHAR},
+       BILLCITY = #{billCity},
+       BILLSTATE = #{billState},
+       BILLZIP = #{billZip},
+       BILLCOUNTRY = #{billCountry},
+       COURIER = #{courier},
+       TOTALPRICE = #{totalPrice},
+       BILLTOFIRSTNAME = #{billToFirstName},
+       BILLTOLASTNAME = #{billToLastName},
+       SHIPTOFIRSTNAMEv= #{shipToFirstName},
+       SHIPTOLASTNAMEv= #{shipToLastName},
+       CREDITCARDv= #{creditCard},
+       EXPRDATEv= #{expiryDate},
+       CARDTYPEv= #{cardType},
+       LOCALEv= #{locale}
+    WHERE ORDERS.USERID = #{orderId}
+    </update>
+    
+    <delete id="deleteOrder" parameterType="int">
+        delete from ORDERS, ORDERSTATUS
+        where ORDERS.USERID = #{value}
+         and ORDERS.ORDERID = ORDERSTATUS.ORDERID
+    </delete>
+
+    <update id="swapStatusToUP" parameterType="string">
+    UPDATE orderstatus
+    SET status= 'UP'
+    WHERE orderid=#{value}
+    </update>
+
+    <update id="swapStatusToP" parameterType="string">
+    UPDATE orderstatus
+    SET status= 'P'
+    WHERE orderid=#{value}
+    </update>
+</mapper>

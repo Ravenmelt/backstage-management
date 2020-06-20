@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.backstage_management.persistence.ItemMapper">
+    <cache/>
+    <insert id="insertItem" parameterType="Item">
+        INSERT INTO item
+        (`itemid`, `productid`, `listprice`, `unitcost`, `supplier`, `status`, `attr1`, `attr2`, `attr3`, `attr4`, `attr5`)
+        VALUES
+        (#{itemId},#{productId},#{listPrice},#{unitCost},#{supplierId},'P',#{attribute1},#{attribute2},#{attribute3},#{attribute4},#{attribute5});
+        INSERT INTO inventory
+        (itemid,qty)
+        VALUES
+        (#{itemId},#{quantity});
+    </insert>
+
+    <update id="updateItem" parameterType="Item">
+        UPDATE item
+        SET
+        productid = #{productId},
+        listprice = #{listPrice},
+        unitcost = #{unitCost},
+        supplier = #{supplierId},
+        status = #{status},
+        attr1 = #{attribute1},
+        attr2 = #{attribute2},
+        attr3 = #{attribute3},
+        attr4 = #{attribute4},
+        attr5 = #{attribute5}
+        WHERE (itemid = #{itemId});
+        UPDATE inventory
+        SET qty = #{quantity}
+        WHERE (itemid = #{itemId});
+    </update>
+
+    <select id="getItemList" resultType="Item">
+          SELECT
+            I.ITEMID,
+            LISTPRICE,
+            UNITCOST,
+            SUPPLIER AS supplierId,
+            I.PRODUCTID AS "productId",
+            NAME AS "product.name",
+            DESCN AS "product.description",
+            CATEGORY AS "product.categoryId",
+            STATUS,
+            ATTR1 AS attribute1,
+            ATTR2 AS attribute2,
+            ATTR3 AS attribute3,
+            ATTR4 AS attribute4,
+            ATTR5 AS attribute5,
+            QTY AS quantity
+        FROM ITEM I, INVENTORY V, PRODUCT P
+        WHERE P.PRODUCTID = I.PRODUCTID
+        AND I.ITEMID = V.ITEMID
+    </select>
+    <delete id="deleteItem" parameterType="string">
+        DELETE FROM INVENTORY WHERE ITEMID = #{itemId};
+        DELETE FROM ITEM WHERE ITEMID = #{itemId};
+    </delete>
+
+    <insert id="insertProduct" parameterType="Product">
+        INSERT INTO product (`productid`, `category`, `name`, `descn`) VALUES (#{productId}, #{categoryId}, #{name}, #{description});
+    </insert>
+    <update id="updateProduct" parameterType="Product">
+        UPDATE product SET `category` = #{categoryId}, `name` = #{name}, `descn` = #{description} WHERE (`productid` = #{productId});
+    </update>
+    <select id="getProductList" resultType="Product">
+        SELECT
+            PRODUCTID,
+            NAME,
+            DESCN as description,
+            CATEGORY as categoryId
+        FROM PRODUCT
+    </select>
+    <delete id="deleteProduct" parameterType="string">
+        DELETE INVENTORY
+        FROM INVENTORY JOIN ITEM ON INVENTORY.ITEMID=ITEM.ITEMID
+        WHERE ITEM.PRODUCTID = #{value};
+        DELETE FROM ITEM
+        WHERE PRODUCTID = #{value};
+        DELETE FROM PRODUCT WHERE PRODUCTID = #{productId};
+    </delete>
+
+    <insert id="insertCategory" parameterType="Category">
+        INSERT INTO `mypetstore`.`category` (`catid`, `name`, `descn`) VALUES (#{categoryId}, #{name}, #{description});
+    </insert>
+    <update id="updateCategory" parameterType="Category">
+        UPDATE category SET `name` = #{name}, `descn` = #{description} WHERE (`catid` = #{categoryId});
+    </update>
+    <select id="getCategoryList" resultType="Category">
+        SELECT
+            CATID AS categoryId,
+            NAME,
+            DESCN AS description
+        FROM CATEGORY;
+    </select>
+    <delete id="deleteCategory" parameterType="string">
+        DELETE INVENTORY FROM INVENTORY JOIN ITEM ON INVENTORY.ITEMID = ITEM.ITEMID WHERE ITEM.PRODUCTID IN
+             (SELECT PRODUCTID FROM PRODUCT WHERE CATEGORY = #{value});
+
+        DELETE ITEM FROM ITEM JOIN PRODUCT ON ITEM.PRODUCTID = PRODUCT.PRODUCTID WHERE PRODUCT.CATEGORY = #{value};
+
+        DELETE FROM PRODUCT  WHERE CATEGORY = #{value};
+
+        DELETE FROM CATEGORY WHERE catid = #{value};
+    </delete>
+
+    <select id="getItem" parameterType="string" resultType="Item">
+        SELECT
+            I.ITEMID,
+            LISTPRICE,
+            UNITCOST,
+            SUPPLIER AS supplierId,
+            I.PRODUCTID AS "product.productId",
+            NAME AS "product.name",
+            DESCN AS "product.description",
+            CATEGORY AS "product.categoryId",
+            STATUS,
+            ATTR1 AS attribute1,
+            ATTR2 AS attribute2,
+            ATTR3 AS attribute3,
+            ATTR4 AS attribute4,
+            ATTR5 AS attribute5,
+            QTY AS quantity
+        FROM ITEM I, INVENTORY V, PRODUCT P
+        WHERE P.PRODUCTID = I.PRODUCTID
+        AND I.ITEMID = V.ITEMID
+        AND I.ITEMID =#{value}
+    </select>
+
+    <select id="getProduct" parameterType="string" resultType="Product">
+        SELECT
+            PRODUCTID,
+            NAME,
+            DESCN as description,
+            CATEGORY as categoryId
+        FROM PRODUCT
+        WHERE PRODUCTID = #{value};
+    </select>
+
+    <select id="getCategory" parameterType="string" resultType="Category">
+                SELECT
+            CATID AS categoryId,
+            NAME,
+            DESCN AS description
+        FROM CATEGORY
+        WHERE CATID = #{value};
+    </select>
+</mapper>

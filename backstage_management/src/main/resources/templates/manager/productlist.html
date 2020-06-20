@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="StyleSheet" href="../css/jpetstore.css" type="text/css" media="screen">
+</head>
+<body>
+<div id="Content">
+<table align="center">
+    <h2 align="center">Product Information</h2>
+
+
+    <th>Product ID</th>
+    <th>Category</th>
+    <th>Name</th>
+
+    <tr th:each="product:${productList}">
+        <td><a th:href="@{/manager/ViewProducts(productId=${product.productId})}" th:text="${product.productId}">Product ID</a></td>
+        <td th:text="${product.categoryId}">Category</td>
+        <td th:text="${product.name}">Product Name</td>
+
+
+    </tr>
+
+<td><a href="/manager/newProductsForm">ADD</a></td>
+</table>
+</div>
+<footer th:replace="common/bottom"></footer>
+</body>
+</html>
